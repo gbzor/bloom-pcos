@@ -1,7 +1,7 @@
 # 🌸 Bloom — PCOS Pill Tracker
 
 A lightweight, fully offline-capable Progressive Web App (PWA) for women managing PCOS. Bloom tracks daily pill intake, cycle phases, mood, symptoms, and personal health notes — all stored privately on-device with no backend, no account, and no analytics.
-
+NOTE: I created this personal project of mine for the sole purpose of helping my girlfriend track her medication.
 ---
 
 ## ✨ Features
