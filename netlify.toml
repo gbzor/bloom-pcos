@@ -1,0 +1,33 @@
+[build]
+  publish = "."
+
+# ── Security headers applied to every response ──
+# These supplement the in-page CSP and add transport-layer hardening
+# that meta tags cannot express (HSTS, frame, referrer, permissions).
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains"
+    X-Content-Type-Options    = "nosniff"
+    X-Frame-Options           = "DENY"
+    Referrer-Policy           = "no-referrer"
+    Permissions-Policy        = "camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()"
+    Cross-Origin-Opener-Policy   = "same-origin"
+    Cross-Origin-Resource-Policy = "same-origin"
+
+# ── Cache headers for static assets ──
+# Service Worker handles offline; HTTP caches stay short to make updates land fast.
+[[headers]]
+  for = "/sw.js"
+  [headers.values]
+    Cache-Control = "no-cache"
+
+[[headers]]
+  for = "/index.html"
+  [headers.values]
+    Cache-Control = "no-cache"
+
+[[headers]]
+  for = "/icons/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

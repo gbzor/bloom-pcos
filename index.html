@@ -9,401 +9,20 @@
 <meta name="apple-mobile-web-app-title" content="Bloom" />
 <link rel="manifest" href="manifest.json" />
 <link rel="apple-touch-icon" href="icons/icon-192.png" />
+<meta http-equiv="Content-Security-Policy"
+  content="default-src 'self';
+           style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+           font-src 'self' https://fonts.gstatic.com;
+           script-src 'self';
+           img-src 'self' data:;
+           connect-src 'none';
+           object-src 'none';
+           base-uri 'self';
+           frame-ancestors 'none';
+           form-action 'none';" />
 <title>Bloom — PCOS Tracker</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
-<style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  :root {
-    --blush:  #FDE8F0;
-    --petal:  #FAD4E4;
-    --rose:   #E8729A;
-    --deep:   #C45C82;
-    --wine:   #9B3D6A;
-    --mist:   #FFFAF9;
-    --ink:    #3D2535;
-    --soft:   #7A5A6A;
-    --border: #F2C4D8;
-    --safe-top: env(safe-area-inset-top, 0px);
-    --safe-bot: env(safe-area-inset-bottom, 0px);
-  }
-
-  html { scroll-behavior: smooth; }
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--mist);
-    color: var(--ink);
-    min-height: 100vh;
-    min-height: 100dvh;
-    overflow-x: hidden;
-  }
-
-  /* ── HEADER ── */
-  header {
-    background: linear-gradient(135deg, #FFF0F6 0%, #FAD4E4 100%);
-    border-bottom: 1.5px solid var(--border);
-    padding: calc(16px + var(--safe-top)) 24px 16px;
-    position: sticky; top: 0; z-index: 100;
-    -webkit-backdrop-filter: blur(10px);
-    backdrop-filter: blur(10px);
-  }
-  .header-inner {
-    max-width: 520px; margin: 0 auto;
-    display: flex; align-items: center; justify-content: space-between;
-  }
-  .logo { display: flex; align-items: center; gap: 10px; }
-  .logo-icon {
-    width: 36px; height: 36px; background: var(--rose);
-    border-radius: 50%; display: flex; align-items: center; justify-content: center;
-    font-size: 18px; box-shadow: 0 2px 10px rgba(232,114,154,0.35);
-  }
-  .logo h1 {
-    font-family: 'Playfair Display', serif;
-    font-size: 22px; font-weight: 700; color: var(--deep);
-    letter-spacing: -0.3px;
-  }
-  .logo span { font-size: 11px; color: var(--soft); font-weight: 400; display: block; margin-top: -3px; }
-  .date-badge {
-    background: white; border: 1.5px solid var(--border);
-    border-radius: 20px; padding: 6px 14px;
-    font-size: 12px; font-weight: 500; color: var(--soft);
-  }
-
-  /* ── NAV TABS ── */
-  .nav-tabs {
-    max-width: 520px; margin: 0 auto;
-    display: flex; gap: 6px; padding: 14px 24px 0;
-    overflow-x: auto; scrollbar-width: none;
-    -webkit-overflow-scrolling: touch;
-  }
-  .nav-tabs::-webkit-scrollbar { display: none; }
-  .tab-btn {
-    flex-shrink: 0; padding: 8px 18px;
-    border-radius: 20px; border: 1.5px solid var(--border);
-    background: white; color: var(--soft);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13px; font-weight: 500;
-    cursor: pointer; transition: all 0.2s ease;
-    white-space: nowrap;
-    -webkit-tap-highlight-color: transparent;
-  }
-  .tab-btn:active { transform: scale(0.96); }
-  .tab-btn.active {
-    background: var(--rose); border-color: var(--rose);
-    color: white; box-shadow: 0 3px 12px rgba(232,114,154,0.35);
-  }
-
-  /* ── MAIN ── */
-  main {
-    max-width: 520px; margin: 0 auto;
-    padding: 18px 24px calc(90px + var(--safe-bot));
-  }
-
-  .panel { display: none; }
-  .panel.active { display: block; animation: fadeUp 0.28s ease; }
-
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(10px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  /* ── CARDS ── */
-  .card {
-    background: white; border: 1.5px solid var(--border);
-    border-radius: 20px; padding: 20px; margin-bottom: 14px;
-    box-shadow: 0 2px 16px rgba(196,92,130,0.06);
-  }
-  .card-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 16px; color: var(--deep); margin-bottom: 14px;
-    display: flex; align-items: center; gap: 8px;
-  }
-  .card-title .icon { font-size: 18px; }
-
-  /* ── STREAK BANNER ── */
-  .streak-banner {
-    background: linear-gradient(135deg, var(--rose), var(--wine));
-    border-radius: 20px; padding: 20px 24px; margin-bottom: 14px;
-    color: white; display: flex; align-items: center; justify-content: space-between;
-    box-shadow: 0 4px 20px rgba(232,114,154,0.4);
-  }
-  .streak-left h2 {
-    font-family: 'Playfair Display', serif;
-    font-size: 32px; font-weight: 700; line-height: 1;
-  }
-  .streak-left p { font-size: 12px; opacity: 0.85; margin-top: 4px; }
-  .streak-right { font-size: 44px; }
-
-  /* ── TODAY'S PILL BUTTON ── */
-  .pill-take-btn {
-    width: 100%; padding: 18px;
-    border-radius: 16px;
-    border: 2.5px solid var(--rose);
-    background: white;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 15px; font-weight: 600; color: var(--rose);
-    cursor: pointer; transition: all 0.25s ease;
-    display: flex; align-items: center; justify-content: center; gap: 10px;
-    margin-bottom: 14px;
-    -webkit-tap-highlight-color: transparent;
-  }
-  .pill-take-btn:active { transform: scale(0.98); }
-  .pill-take-btn.taken {
-    background: linear-gradient(135deg, #FCE4EC, #F8BBD0);
-    border-color: var(--deep); color: var(--deep);
-  }
-  .pill-take-btn .check-ring {
-    width: 30px; height: 30px; border-radius: 50%;
-    border: 2.5px solid currentColor;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 14px; transition: all 0.2s;
-  }
-
-  /* ── STATS ROW ── */
-  .stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
-  .stat-card {
-    background: white; border: 1.5px solid var(--border);
-    border-radius: 18px; padding: 16px; text-align: center;
-    box-shadow: 0 2px 12px rgba(196,92,130,0.05);
-  }
-  .stat-num {
-    font-family: 'Playfair Display', serif;
-    font-size: 32px; color: var(--rose); font-weight: 700; line-height: 1;
-  }
-  .stat-label { font-size: 11px; color: var(--soft); margin-top: 4px; }
-
-  /* ── MOOD TRACKER ── */
-  .mood-row { display: flex; gap: 8px; justify-content: space-around; }
-  .mood-btn {
-    flex: 1;
-    padding: 10px 4px;
-    border-radius: 14px;
-    border: 2px solid var(--border); background: white;
-    font-size: 20px; cursor: pointer; transition: all 0.2s;
-    display: flex; flex-direction: column; align-items: center; gap: 4px;
-    -webkit-tap-highlight-color: transparent;
-  }
-  .mood-btn span { font-size: 10px; font-weight: 500; color: var(--soft); }
-  .mood-btn:active { transform: scale(0.93); }
-  .mood-btn.selected {
-    border-color: var(--rose); background: var(--blush);
-    box-shadow: 0 3px 12px rgba(232,114,154,0.3);
-  }
-
-  /* ── CYCLE RING ── */
-  .cycle-wrap { display: flex; align-items: center; gap: 20px; margin: 10px 0; }
-  .cycle-ring { position: relative; width: 90px; height: 90px; flex-shrink: 0; }
-  .cycle-ring svg { transform: rotate(-90deg); }
-  .ring-bg  { fill: none; stroke: var(--petal); stroke-width: 8; }
-  .ring-fill { fill: none; stroke: var(--rose); stroke-width: 8; stroke-linecap: round; transition: stroke-dashoffset 0.6s ease; }
-  .ring-label {
-    position: absolute; inset: 0;
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-  }
-  .ring-day  { font-size: 22px; font-weight: 700; color: var(--deep); }
-  .ring-sub  { font-size: 9px; color: var(--soft); }
-  .cycle-info h4  { font-weight: 600; font-size: 14px; color: var(--ink); }
-  .cycle-info p   { font-size: 12px; color: var(--soft); line-height: 1.6; margin-top: 4px; }
-  .phase-chip {
-    display: inline-block; padding: 4px 12px;
-    background: var(--blush); border-radius: 20px;
-    font-size: 11px; font-weight: 600; color: var(--deep);
-    margin-top: 6px; border: 1px solid var(--border);
-  }
-  .adj-row {
-    display: flex; gap: 8px; margin-top: 12px; align-items: center;
-  }
-
-  /* ── CALENDAR ── */
-  .calendar-header {
-    display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;
-  }
-  .cal-nav {
-    background: none; border: 1.5px solid var(--border);
-    border-radius: 50%; width: 32px; height: 32px;
-    cursor: pointer; font-size: 14px; color: var(--soft);
-    display: flex; align-items: center; justify-content: center;
-    transition: all 0.2s; -webkit-tap-highlight-color: transparent;
-  }
-  .cal-nav:hover, .cal-nav:active { border-color: var(--rose); color: var(--rose); }
-  .cal-month { font-family: 'Playfair Display', serif; font-size: 15px; color: var(--deep); }
-  .day-labels {
-    display: grid; grid-template-columns: repeat(7, 1fr);
-    gap: 4px; margin-bottom: 6px;
-  }
-  .day-label { text-align: center; font-size: 11px; font-weight: 600; color: var(--soft); padding: 4px 0; }
-  .days-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
-  .day-cell {
-    aspect-ratio: 1; border-radius: 50%; border: none;
-    background: var(--blush); font-size: 12px; font-weight: 500; color: var(--soft);
-    cursor: pointer; transition: all 0.18s;
-    display: flex; align-items: center; justify-content: center;
-    -webkit-tap-highlight-color: transparent;
-  }
-  .day-cell:active:not(.empty):not(.future) { transform: scale(0.9); }
-  .day-cell.empty   { background: transparent; pointer-events: none; }
-  .day-cell.taken   { background: var(--rose); color: white; box-shadow: 0 2px 8px rgba(232,114,154,0.45); }
-  .day-cell.missed  { background: #FFD6D6; color: #C0392B; text-decoration: line-through; }
-  .day-cell.today   { border: 2.5px solid var(--rose); color: var(--rose); font-weight: 700; }
-  .day-cell.today.taken { color: white; border-color: var(--wine); }
-  .day-cell.future  { background: #F9F0F4; color: #D5B5C3; cursor: default; }
-  .cal-legend {
-    display: flex; gap: 14px; margin-top: 14px; justify-content: center; flex-wrap: wrap;
-  }
-  .cal-legend span { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--soft); }
-  .dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
-
-  /* ── PILLS ── */
-  .pill-list { display: flex; flex-direction: column; gap: 10px; }
-  .pill-item {
-    display: flex; align-items: center; gap: 12px;
-    padding: 14px 16px; background: var(--blush);
-    border-radius: 14px; border: 1px solid var(--border);
-    transition: border 0.2s;
-  }
-  .pill-item:active { border-color: var(--rose); }
-  .pill-icon { width: 40px; height: 40px; border-radius: 50%; background: white; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
-  .pill-info { flex: 1; min-width: 0; }
-  .pill-name { font-weight: 600; font-size: 14px; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .pill-dose { font-size: 12px; color: var(--soft); margin-top: 2px; }
-  .pill-right { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
-  .pill-time { font-size: 12px; font-weight: 600; color: var(--rose); background: white; padding: 4px 10px; border-radius: 10px; border: 1px solid var(--border); white-space: nowrap; }
-  .del-btn { background: none; border: none; font-size: 13px; color: #D5B5C3; cursor: pointer; padding: 0; line-height: 1; }
-  .add-pill-btn {
-    width: 100%; padding: 13px;
-    border: 2px dashed var(--border); border-radius: 14px;
-    background: none; color: var(--soft);
-    font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500;
-    cursor: pointer; transition: all 0.2s; margin-top: 6px;
-    -webkit-tap-highlight-color: transparent;
-  }
-  .add-pill-btn:active { border-color: var(--rose); color: var(--rose); background: #FFF5F9; }
-
-  /* ── NOTES ── */
-  .note-textarea {
-    width: 100%; padding: 14px;
-    border: 1.5px solid var(--border); border-radius: 14px;
-    background: var(--blush); font-family: 'DM Sans', sans-serif;
-    font-size: 13px; color: var(--ink); resize: vertical;
-    min-height: 100px; outline: none; transition: border 0.2s;
-    -webkit-appearance: none;
-  }
-  .note-textarea:focus { border-color: var(--rose); background: white; }
-  .save-note-btn {
-    margin-top: 10px; padding: 11px 22px;
-    background: var(--rose); color: white;
-    border: none; border-radius: 12px; font-family: 'DM Sans', sans-serif;
-    font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s;
-    -webkit-tap-highlight-color: transparent;
-  }
-  .save-note-btn:active { background: var(--deep); transform: scale(0.97); }
-  .note-entry {
-    padding: 12px 14px; border-left: 3px solid var(--rose);
-    background: var(--blush); border-radius: 0 12px 12px 0; margin-bottom: 8px;
-  }
-  .note-header { display: flex; justify-content: space-between; margin-bottom: 4px; align-items: flex-start; }
-  .note-date { font-size: 11px; color: var(--soft); }
-  .note-text { font-size: 13px; color: var(--ink); line-height: 1.55; }
-
-  /* ── INFO ── */
-  .info-tabs { display: flex; gap: 6px; margin-bottom: 14px; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
-  .info-tabs::-webkit-scrollbar { display: none; }
-  .info-tab {
-    flex-shrink: 0; padding: 7px 14px;
-    border-radius: 16px; border: 1.5px solid var(--border);
-    background: white; color: var(--soft);
-    font-size: 12px; font-weight: 500; cursor: pointer; transition: all 0.2s;
-    -webkit-tap-highlight-color: transparent;
-  }
-  .info-tab.active { background: var(--blush); border-color: var(--rose); color: var(--deep); }
-  .info-content { display: none; }
-  .info-content.active { display: block; animation: fadeUp 0.22s ease; }
-  .info-block { padding: 14px 16px; background: var(--blush); border-radius: 14px; margin-bottom: 10px; border-left: 3px solid var(--rose); }
-  .info-block h4 { font-weight: 600; font-size: 14px; color: var(--deep); margin-bottom: 6px; }
-  .info-block p, .info-block li { font-size: 13px; color: var(--soft); line-height: 1.65; }
-  .info-block ul { padding-left: 16px; }
-  .info-block li { margin-bottom: 4px; }
-  .tip-chip { display: inline-block; background: white; border: 1px solid var(--border); border-radius: 20px; padding: 4px 12px; font-size: 12px; color: var(--rose); margin: 3px; font-weight: 500; }
-
-  /* ── MODAL ── */
-  .modal-overlay {
-    position: fixed; inset: 0; background: rgba(61,37,53,0.4);
-    -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px);
-    z-index: 200; display: flex; align-items: flex-end; justify-content: center;
-    opacity: 0; pointer-events: none; transition: opacity 0.25s;
-  }
-  .modal-overlay.open { opacity: 1; pointer-events: all; }
-  .modal {
-    width: 100%; max-width: 520px;
-    background: white; border-radius: 24px 24px 0 0;
-    padding: 20px 20px calc(20px + var(--safe-bot));
-    max-height: 90vh; overflow-y: auto;
-    transform: translateY(40px); transition: transform 0.3s ease;
-  }
-  .modal-overlay.open .modal { transform: translateY(0); }
-  .modal-handle { width: 40px; height: 4px; background: var(--border); border-radius: 2px; margin: 0 auto 18px; }
-  .modal h3 { font-family: 'Playfair Display', serif; font-size: 18px; color: var(--deep); margin-bottom: 16px; }
-  .field-group { margin-bottom: 12px; }
-  .field-group label { display: block; font-size: 11px; font-weight: 600; color: var(--soft); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px; }
-  .field-group input, .field-group select {
-    width: 100%; padding: 12px 14px;
-    border: 1.5px solid var(--border); border-radius: 12px;
-    font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--ink);
-    outline: none; transition: border 0.2s; background: var(--blush);
-    -webkit-appearance: none; appearance: none;
-  }
-  .field-group input:focus, .field-group select:focus { border-color: var(--rose); background: white; }
-  .modal-actions { display: flex; gap: 10px; margin-top: 18px; }
-  .btn-cancel {
-    flex: 1; padding: 13px;
-    border: 1.5px solid var(--border); border-radius: 12px;
-    background: none; color: var(--soft);
-    font-family: 'DM Sans', sans-serif; font-size: 14px; cursor: pointer;
-  }
-  .btn-confirm {
-    flex: 2; padding: 13px;
-    background: var(--rose); color: white; border: none; border-radius: 12px;
-    font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer;
-    transition: all 0.2s; -webkit-tap-highlight-color: transparent;
-  }
-  .btn-confirm:active { background: var(--deep); transform: scale(0.97); }
-
-  /* ── TOAST ── */
-  .toast {
-    position: fixed; bottom: calc(24px + var(--safe-bot)); left: 50%;
-    transform: translateX(-50%) translateY(80px);
-    background: var(--ink); color: white; padding: 12px 22px;
-    border-radius: 30px; font-size: 13px; font-weight: 500;
-    z-index: 300; transition: transform 0.3s ease, opacity 0.3s;
-    opacity: 0; white-space: nowrap;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-    pointer-events: none;
-  }
-  .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
-  .toast.pink { background: var(--rose); }
-
-  /* ── INSTALL BANNER ── */
-  .install-banner {
-    background: linear-gradient(135deg, #FFF0F6, #FAD4E4);
-    border: 1.5px solid var(--border); border-radius: 16px;
-    padding: 14px 16px; margin-bottom: 14px;
-    display: flex; align-items: center; gap: 12px;
-    animation: fadeUp 0.3s ease;
-  }
-  .install-banner .ib-icon { font-size: 24px; flex-shrink: 0; }
-  .install-banner p { font-size: 12px; color: var(--soft); line-height: 1.5; flex: 1; }
-  .install-banner strong { color: var(--deep); }
-  .ib-close { background: none; border: none; font-size: 16px; color: var(--soft); cursor: pointer; flex-shrink: 0; padding: 4px; }
-
-  /* ── HINT ROW ── */
-  .hint-row { text-align: center; font-size: 11px; color: var(--soft); margin-top: 8px; }
-
-  @media (max-width: 380px) {
-    header { padding-left: 16px; padding-right: 16px; }
-    main { padding-left: 16px; padding-right: 16px; }
-    .nav-tabs { padding-left: 16px; }
-  }
-</style>
+<link rel="stylesheet" href="app.css" />
 </head>
 <body>
 
@@ -412,7 +31,7 @@
   <span class="ib-icon">📲</span>
   <p>Add Bloom to your Home Screen for the best offline experience.<br>
   Tap <strong>Share ⬆</strong> → <strong>Add to Home Screen</strong> in Safari.</p>
-  <button class="ib-close" onclick="dismissBanner()">✕</button>
+  <button class="ib-close" data-action="dismissBanner">✕</button>
 </div>
 
 <!-- HEADER -->
@@ -431,11 +50,11 @@
 
 <!-- NAV TABS -->
 <div class="nav-tabs">
-  <button class="tab-btn active" onclick="switchPanel('home',this)">🏠 Today</button>
-  <button class="tab-btn" onclick="switchPanel('schedule',this)">💊 Pills</button>
-  <button class="tab-btn" onclick="switchPanel('calendar',this)">📅 Calendar</button>
-  <button class="tab-btn" onclick="switchPanel('notes',this)">📝 Notes</button>
-  <button class="tab-btn" onclick="switchPanel('info',this)">💡 PCOS Info</button>
+  <button class="tab-btn active" data-action="switchPanel" data-target="home">🏠 Today</button>
+  <button class="tab-btn" data-action="switchPanel" data-target="schedule">💊 Pills</button>
+  <button class="tab-btn" data-action="switchPanel" data-target="calendar">📅 Calendar</button>
+  <button class="tab-btn" data-action="switchPanel" data-target="notes">📝 Notes</button>
+  <button class="tab-btn" data-action="switchPanel" data-target="info">💡 PCOS Info</button>
 </div>
 
 <!-- MAIN -->
@@ -463,7 +82,7 @@
       </div>
     </div>
 
-    <button class="pill-take-btn" id="todayPillBtn" onclick="toggleTodayPill()">
+    <button class="pill-take-btn" id="todayPillBtn" data-action="toggleTodayPill">
       <div class="check-ring" id="pillCheckRing">💊</div>
       <span id="pillBtnText">Mark today's pill as taken</span>
     </button>
@@ -471,12 +90,32 @@
     <div class="card">
       <div class="card-title"><span class="icon">🌸</span> How are you feeling today?</div>
       <div class="mood-row">
-        <button class="mood-btn" onclick="selectMood(this,'happy')" data-m="happy">😊<span>Happy</span></button>
-        <button class="mood-btn" onclick="selectMood(this,'calm')" data-m="calm">😌<span>Calm</span></button>
-        <button class="mood-btn" onclick="selectMood(this,'tired')" data-m="tired">😴<span>Tired</span></button>
-        <button class="mood-btn" onclick="selectMood(this,'low')" data-m="low">😢<span>Low</span></button>
-        <button class="mood-btn" onclick="selectMood(this,'irritable')" data-m="irritable">😤<span>Grumpy</span></button>
+        <button class="mood-btn" data-action="selectMood" data-mood="happy" data-m="happy">😊<span>Happy</span></button>
+        <button class="mood-btn" data-action="selectMood" data-mood="calm" data-m="calm">😌<span>Calm</span></button>
+        <button class="mood-btn" data-action="selectMood" data-mood="tired" data-m="tired">😴<span>Tired</span></button>
+        <button class="mood-btn" data-action="selectMood" data-mood="low" data-m="low">😢<span>Low</span></button>
+        <button class="mood-btn" data-action="selectMood" data-mood="irritable" data-m="irritable">😤<span>Grumpy</span></button>
       </div>
+
+      <!-- SYMPTOM CHECKLIST -->
+      <div class="symptom-divider">
+        <span>Today's symptoms</span>
+      </div>
+      <div class="symptom-grid" id="symptomGrid">
+        <!-- Rendered by JS -->
+      </div>
+
+      <!-- DAILY REPORT -->
+      <div class="report-box" id="reportBox" style="display:none">
+        <div class="report-header">
+          <span style="font-size:12px;font-weight:600;color:var(--deep)">📋 Daily Report</span>
+          <button class="copy-btn" id="copyReportBtn" data-action="copyReport">Copy</button>
+        </div>
+        <pre class="report-text" id="reportText"></pre>
+      </div>
+      <button class="generate-report-btn" id="generateReportBtn" data-action="generateReport">
+        Generate daily report
+      </button>
     </div>
 
     <div class="card">
@@ -500,9 +139,9 @@
         </div>
       </div>
       <div class="adj-row">
-        <button class="cal-nav" onclick="cycleDayAdj(-1)">‹</button>
+        <button class="cal-nav" data-action="cycleDayAdj" data-delta="-1">‹</button>
         <span style="font-size:13px;color:var(--soft);flex:1;text-align:center">Adjust cycle day</span>
-        <button class="cal-nav" onclick="cycleDayAdj(1)">›</button>
+        <button class="cal-nav" data-action="cycleDayAdj" data-delta="1">›</button>
       </div>
     </div>
 
@@ -513,7 +152,7 @@
     <div class="card">
       <div class="card-title"><span class="icon">⏰</span> My Pill Schedule</div>
       <div class="pill-list" id="pillList"></div>
-      <button class="add-pill-btn" onclick="openAddPill()">+ Add a pill or supplement</button>
+      <button class="add-pill-btn" data-action="openAddPill">+ Add a pill or supplement</button>
     </div>
     <div class="card">
       <div class="card-title"><span class="icon">💡</span> Reminder tip</div>
@@ -525,9 +164,9 @@
   <div class="panel" id="panel-calendar">
     <div class="card">
       <div class="calendar-header">
-        <button class="cal-nav" onclick="changeMonth(-1)">‹</button>
+        <button class="cal-nav" data-action="changeMonth" data-delta="-1">‹</button>
         <div class="cal-month" id="calMonthLabel"></div>
-        <button class="cal-nav" onclick="changeMonth(1)">›</button>
+        <button class="cal-nav" data-action="changeMonth" data-delta="1">›</button>
       </div>
       <div class="day-labels">
         <div class="day-label">Sun</div><div class="day-label">Mon</div>
@@ -549,7 +188,7 @@
     <div class="card">
       <div class="card-title"><span class="icon">📝</span> Add a note</div>
       <textarea class="note-textarea" id="noteInput" placeholder="Write about symptoms, how you're feeling, or anything you want to remember..."></textarea>
-      <button class="save-note-btn" onclick="saveNote()">Save note</button>
+      <button class="save-note-btn" data-action="saveNote">Save note</button>
     </div>
     <div class="card">
       <div class="card-title"><span class="icon">📖</span> Past notes</div>
@@ -560,11 +199,11 @@
   <!-- INFO -->
   <div class="panel" id="panel-info">
     <div class="info-tabs">
-      <button class="info-tab active" onclick="switchInfo('what',this)">What is PCOS?</button>
-      <button class="info-tab" onclick="switchInfo('symptoms',this)">Symptoms</button>
-      <button class="info-tab" onclick="switchInfo('food',this)">Diet tips</button>
-      <button class="info-tab" onclick="switchInfo('lifestyle',this)">Lifestyle</button>
-      <button class="info-tab" onclick="switchInfo('pills',this)">Meds</button>
+      <button class="info-tab active" data-action="switchInfo" data-target="what">What is PCOS?</button>
+      <button class="info-tab" data-action="switchInfo" data-target="symptoms">Symptoms</button>
+      <button class="info-tab" data-action="switchInfo" data-target="food">Diet tips</button>
+      <button class="info-tab" data-action="switchInfo" data-target="lifestyle">Lifestyle</button>
+      <button class="info-tab" data-action="switchInfo" data-target="pills">Meds</button>
     </div>
 
     <div class="info-content active" id="info-what">
@@ -702,7 +341,7 @@
 </main>
 
 <!-- MODAL: Add Pill -->
-<div class="modal-overlay" id="addPillModal" onclick="closeModalBg(event)">
+<div class="modal-overlay" id="addPillModal" data-action="closeModalBg">
   <div class="modal">
     <div class="modal-handle"></div>
     <h3>Add a Pill or Supplement</h3>
@@ -728,324 +367,26 @@
       </select>
     </div>
     <div class="modal-actions">
-      <button class="btn-cancel" onclick="closeAddPill()">Cancel</button>
-      <button class="btn-confirm" onclick="addPill()">Save pill</button>
+      <button class="btn-cancel" data-action="closeAddPill">Cancel</button>
+      <button class="btn-confirm" data-action="addPill">Save pill</button>
+    </div>
+  </div>
+</div>
+
+<!-- CUSTOM CONFIRM MODAL (replaces native confirm() which breaks on iOS PWA) -->
+<div class="modal-overlay" id="confirmModal">
+  <div class="modal" style="padding:24px 20px 28px">
+    <div class="modal-handle"></div>
+    <h3 id="confirmMsg" style="font-size:16px;margin-bottom:20px">Are you sure?</h3>
+    <div class="modal-actions">
+      <button class="btn-cancel" id="confirmNo">Cancel</button>
+      <button class="btn-confirm" id="confirmYes" style="background:#E8729A">Remove</button>
     </div>
   </div>
 </div>
 
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
-
-<script>
-// ── REGISTER SERVICE WORKER ──
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js')
-      .then(reg => console.log('SW registered:', reg.scope))
-      .catch(err => console.log('SW error:', err));
-  });
-}
-
-// ── STATE ──
-let state = {};
-try { state = JSON.parse(localStorage.getItem('bloom_state') || '{}'); } catch(e) {}
-if (!state.pills) state.pills = [{ name: 'PCOS Pill', dose: '1 tablet', time: '08:00', type: '💊' }];
-if (!state.taken)    state.taken    = {};
-if (!state.notes)    state.notes    = [];
-if (!state.moods)    state.moods    = {};
-if (!state.cycleDay) state.cycleDay = 1;
-
-function save() {
-  try { localStorage.setItem('bloom_state', JSON.stringify(state)); } catch(e) {}
-}
-
-// ── DATE ──
-const now = new Date();
-const todayKey = now.toISOString().slice(0,10);
-const MONTHS   = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-const DAYS     = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-document.getElementById('todayDate').textContent = `${DAYS[now.getDay()]}, ${MONTHS[now.getMonth()]} ${now.getDate()}`;
-
-// ── INSTALL BANNER ──
-const isStandalone = window.navigator.standalone === true ||
-  window.matchMedia('(display-mode: standalone)').matches;
-const bannerDismissed = localStorage.getItem('bloom_banner_dismissed');
-if (!isStandalone && !bannerDismissed) {
-  document.getElementById('installBanner').style.display = 'flex';
-}
-function dismissBanner() {
-  document.getElementById('installBanner').style.display = 'none';
-  localStorage.setItem('bloom_banner_dismissed', '1');
-}
-
-// ── PANEL SWITCH ──
-function switchPanel(id, btn) {
-  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('panel-' + id).classList.add('active');
-  btn.classList.add('active');
-  if (id === 'calendar') renderCalendar();
-  if (id === 'notes')    renderNotes();
-  if (id === 'schedule') renderPills();
-  if (id === 'home')     updateHome();
-}
-
-// ── HOME ──
-function updateHome() {
-  // Streak
-  let streak = 0;
-  const d = new Date(now);
-  while (true) {
-    const k = d.toISOString().slice(0,10);
-    if (state.taken[k]) { streak++; d.setDate(d.getDate()-1); }
-    else break;
-  }
-  document.getElementById('streakCount').textContent = streak;
-
-  // Month stats
-  const ym = todayKey.slice(0,7);
-  let taken = 0, missed = 0;
-  for (let i = 1; i <= now.getDate(); i++) {
-    const k = `${ym}-${String(i).padStart(2,'0')}`;
-    if (state.taken[k]) taken++;
-    else if (k < todayKey) missed++;
-  }
-  document.getElementById('takenThisMonth').textContent  = taken;
-  document.getElementById('missedThisMonth').textContent = missed;
-
-  // Pill button
-  const taken_today = state.taken[todayKey];
-  const pillBtn  = document.getElementById('todayPillBtn');
-  const pillRing = document.getElementById('pillCheckRing');
-  const pillTxt  = document.getElementById('pillBtnText');
-  if (taken_today) {
-    pillBtn.classList.add('taken');
-    pillRing.textContent = '✓';
-    pillTxt.textContent  = 'Taken today! Great job 💕';
-  } else {
-    pillBtn.classList.remove('taken');
-    pillRing.textContent = '💊';
-    pillTxt.textContent  = "Mark today's pill as taken";
-  }
-
-  // Mood restore
-  document.querySelectorAll('.mood-btn').forEach(b => {
-    b.classList.toggle('selected', b.dataset.m === state.moods[todayKey]);
-  });
-
-  updateCycleRing();
-}
-
-function toggleTodayPill() {
-  state.taken[todayKey] = !state.taken[todayKey];
-  save(); updateHome();
-  if (state.taken[todayKey]) {
-    showToast('💊 Pill logged! Keep it up 🌸', 'pink');
-    confettiPop();
-  } else {
-    showToast('Pill unmarked for today.');
-  }
-}
-
-function selectMood(btn, key) {
-  const emojis = { happy:'😊', calm:'😌', tired:'😴', low:'😢', irritable:'😤' };
-  document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('selected'));
-  btn.classList.add('selected');
-  state.moods[todayKey] = key;
-  save();
-  showToast(`Mood logged: ${emojis[key]}`);
-}
-
-// ── CYCLE RING ──
-const PHASES = [
-  { days:[1,5],   name:'Menstrual Phase',  desc:'Rest and be gentle. Light movement like walking or yoga can help ease cramps.',        chip:'Day 1–5'   },
-  { days:[6,13],  name:'Follicular Phase', desc:'Energy rising! Great time for cardio, new projects, and social activities.',           chip:'Day 6–13'  },
-  { days:[14,16], name:'Ovulation Phase',  desc:'Peak energy and confidence. Great for intense workouts and important plans.',          chip:'Day 14–16' },
-  { days:[17,28], name:'Luteal Phase',     desc:'Wind down gradually. Focus on rest, self-care, and gentler exercise.',                 chip:'Day 17–28' },
-];
-function getPhase(d) { return PHASES.find(p => d >= p.days[0] && d <= p.days[1]) || PHASES[0]; }
-function updateCycleRing() {
-  const cd = state.cycleDay || 1;
-  document.getElementById('cycleDayNum').textContent   = cd;
-  document.getElementById('cycleRingFill').style.strokeDashoffset = 226.2 * (1 - cd / 28);
-  const ph = getPhase(cd);
-  document.getElementById('cyclePhaseTitle').textContent = ph.name;
-  document.getElementById('cyclePhaseDesc').textContent  = ph.desc;
-  document.getElementById('phasechip').textContent       = ph.chip;
-}
-function cycleDayAdj(d) {
-  state.cycleDay = Math.max(1, Math.min(28, (state.cycleDay || 1) + d));
-  save(); updateCycleRing();
-}
-
-// ── PILLS ──
-function renderPills() {
-  const list = document.getElementById('pillList');
-  if (!state.pills.length) {
-    list.innerHTML = '<p style="font-size:13px;color:var(--soft)">No pills added yet.</p>';
-    return;
-  }
-  list.innerHTML = state.pills.map((p, i) => `
-    <div class="pill-item">
-      <div class="pill-icon">${p.type}</div>
-      <div class="pill-info">
-        <div class="pill-name">${esc(p.name)}</div>
-        <div class="pill-dose">${esc(p.dose)}</div>
-      </div>
-      <div class="pill-right">
-        <div class="pill-time">${fmtTime(p.time)}</div>
-        <button class="del-btn" onclick="deletePill(${i})">✕</button>
-      </div>
-    </div>
-  `).join('');
-}
-function fmtTime(t) {
-  const [h, m] = t.split(':');
-  const hh = parseInt(h);
-  return `${hh > 12 ? hh - 12 : hh || 12}:${m} ${hh >= 12 ? 'PM' : 'AM'}`;
-}
-function openAddPill() { document.getElementById('addPillModal').classList.add('open'); }
-function closeAddPill() { document.getElementById('addPillModal').classList.remove('open'); }
-function closeModalBg(e) { if (e.target.classList.contains('modal-overlay')) closeAddPill(); }
-function addPill() {
-  const name = document.getElementById('newPillName').value.trim();
-  if (!name) { showToast('Please enter a pill name.'); return; }
-  state.pills.push({
-    name,
-    dose: document.getElementById('newPillDose').value.trim() || '—',
-    time: document.getElementById('newPillTime').value,
-    type: document.getElementById('newPillType').value
-  });
-  save(); renderPills(); closeAddPill();
-  showToast(`💊 ${name} added!`, 'pink');
-  document.getElementById('newPillName').value = '';
-  document.getElementById('newPillDose').value = '';
-}
-function deletePill(i) {
-  if (!confirm(`Remove "${state.pills[i].name}"?`)) return;
-  state.pills.splice(i, 1);
-  save(); renderPills();
-  showToast('Pill removed.');
-}
-
-// ── CALENDAR ──
-let calYear = now.getFullYear(), calMonth = now.getMonth();
-function changeMonth(d) {
-  calMonth += d;
-  if (calMonth < 0)  { calMonth = 11; calYear--; }
-  if (calMonth > 11) { calMonth = 0;  calYear++; }
-  renderCalendar();
-}
-function renderCalendar() {
-  document.getElementById('calMonthLabel').textContent = `${MONTHS[calMonth]} ${calYear}`;
-  const grid  = document.getElementById('daysGrid');
-  const first = new Date(calYear, calMonth, 1).getDay();
-  const days  = new Date(calYear, calMonth + 1, 0).getDate();
-  const ym    = `${calYear}-${String(calMonth + 1).padStart(2,'0')}`;
-  let html = '';
-  for (let i = 0; i < first; i++) html += '<div class="day-cell empty"></div>';
-  for (let d = 1; d <= days; d++) {
-    const k        = `${ym}-${String(d).padStart(2,'0')}`;
-    const isToday  = k === todayKey;
-    const isFuture = k > todayKey;
-    const isTaken  = !!state.taken[k];
-    const isMissed = !isTaken && !isFuture && k < todayKey;
-    let cls = 'day-cell';
-    if (isTaken)  cls += ' taken';
-    if (isMissed) cls += ' missed';
-    if (isFuture) cls += ' future';
-    if (isToday)  cls += ' today';
-    html += `<button class="${cls}" onclick="toggleDay('${k}')" ${isFuture ? 'disabled' : ''}>${d}</button>`;
-  }
-  grid.innerHTML = html;
-}
-function toggleDay(k) {
-  if (k > todayKey) return;
-  state.taken[k] = !state.taken[k];
-  save(); renderCalendar(); updateHome();
-  showToast(state.taken[k] ? '✓ Marked as taken' : 'Unmarked');
-}
-
-// ── NOTES ──
-function saveNote() {
-  const text = document.getElementById('noteInput').value.trim();
-  if (!text) { showToast('Write something first 💕'); return; }
-  state.notes.unshift({ date: new Date().toLocaleString(), text });
-  save();
-  document.getElementById('noteInput').value = '';
-  renderNotes();
-  showToast('Note saved 🌸', 'pink');
-}
-function renderNotes() {
-  const el = document.getElementById('notesList');
-  if (!state.notes.length) {
-    el.innerHTML = '<p style="font-size:13px;color:var(--soft)">No notes yet. Start journaling above 💕</p>';
-    return;
-  }
-  el.innerHTML = state.notes.slice(0, 30).map((n, i) => `
-    <div class="note-entry">
-      <div class="note-header">
-        <span class="note-date">${esc(n.date)}</span>
-        <button class="del-btn" onclick="deleteNote(${i})">✕</button>
-      </div>
-      <div class="note-text">${esc(n.text)}</div>
-    </div>
-  `).join('');
-}
-function deleteNote(i) { state.notes.splice(i, 1); save(); renderNotes(); }
-
-// ── INFO ──
-function switchInfo(id, btn) {
-  document.querySelectorAll('.info-content').forEach(el => el.classList.remove('active'));
-  document.querySelectorAll('.info-tab').forEach(b => b.classList.remove('active'));
-  document.getElementById('info-' + id).classList.add('active');
-  btn.classList.add('active');
-}
-
-// ── TOAST ──
-let toastTimer;
-function showToast(msg, type = '') {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = 'toast show' + (type ? ' ' + type : '');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
-}
-
-// ── CONFETTI ──
-function confettiPop() {
-  const emojis = ['🌸','💗','✨','💊','🌷','🎀'];
-  for (let i = 0; i < 12; i++) {
-    const el = document.createElement('div');
-    el.textContent = emojis[Math.floor(Math.random() * emojis.length)];
-    const delay = Math.random() * 0.4;
-    el.style.cssText = `
-      position:fixed;top:45%;left:${15+Math.random()*70}%;
-      font-size:${14+Math.random()*16}px;
-      pointer-events:none;z-index:999;
-      opacity:1;
-      animation:cfly ${0.9+Math.random()*0.5}s ease forwards;
-      animation-delay:${delay}s;
-    `;
-    document.body.appendChild(el);
-    setTimeout(() => el.remove(), 1800);
-  }
-}
-const cStyle = document.createElement('style');
-cStyle.textContent = `@keyframes cfly{0%{transform:translateY(0) scale(1) rotate(0deg);opacity:1}100%{transform:translateY(-170px) scale(0.4) rotate(${Math.random()*360}deg);opacity:0}}`;
-document.head.appendChild(cStyle);
-
-// ── UTILS ──
-function esc(s) {
-  return String(s)
-    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
-    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
-// ── INIT ──
-updateHome();
-renderCalendar();
-</script>
+<script src="app.js" defer></script>
 </body>
 </html>
